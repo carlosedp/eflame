@@ -10,6 +10,7 @@
          format_trace/1, format_trace/2]).
 -export([help/0, custom_trace_flags/0]).
 -compile(export_all). %% SLF debugging
+-compile(nowarn_export_all).
 
 -record(state, {
           output_path="",
@@ -173,8 +174,8 @@ exp1_inner({trace_ts, Pid, call, MFA, BIN, TS},
            end,
     %% TODO: more state tracking here.
     S#state{pid=Pid, last_ts=TS, count=Count+1, acc=Acc2}
-  catch XX:YY ->
-            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:get_stacktrace()]),
+  catch XX:YY:Stacktrace ->
+            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:display(Stacktrace)]),
             S
   end;
 exp1_inner({trace_ts, _Pid, return_to, MFA, TS}, #state{last_ts=LastTS, acc=Acc} = S) ->
@@ -194,11 +195,11 @@ exp1_inner({trace_ts, _Pid, return_to, MFA, TS}, #state{last_ts=LastTS, acc=Acc}
             {LastStack, LastTime + USec}|Tail],
 %    io:format(user, "return-to: ~p\n", [lists:sublist(Acc2, 4)]),
     S#state{last_ts=TS, acc=Acc2}
-  catch XX:YY ->
-            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:get_stacktrace()]),
+  catch XX:YY:Stacktrace ->
+            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:display(Stacktrace)]),
             S
   end;
-    
+
 exp1_inner({trace_ts, _Pid, gc_start, _Info, TS}, #state{last_ts=LastTS, acc=Acc} = S) ->
   try
     %% Push a 0 usec item onto Acc.
@@ -210,7 +211,7 @@ exp1_inner({trace_ts, _Pid, gc_start, _Info, TS}, #state{last_ts=LastTS, acc=Acc
 %    io:format(user, "GC 1: ~p\n", [lists:sublist(Acc2, 4)]),
     S#state{last_ts=TS, acc=Acc2}
   catch _XX:_YY ->
-            %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:get_stacktrace()]),
+            %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:display(Stacktrace)]),
             S
   end;
 exp1_inner({trace_ts, _Pid, gc_end, _Info, TS}, #state{last_ts=LastTS, acc=Acc} = S) ->
@@ -223,7 +224,7 @@ exp1_inner({trace_ts, _Pid, gc_end, _Info, TS}, #state{last_ts=LastTS, acc=Acc} 
 %    io:format(user, "GC 2: ~p\n", [lists:sublist(Acc2, 4)]),
     S#state{last_ts=TS, acc=Acc2}
   catch _XX:_YY ->
-            %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:get_stacktrace()]),
+            %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:display(Stacktrace)]),
             S
   end;
 
@@ -239,8 +240,8 @@ exp1_inner({trace_ts, _Pid, out, MFA, TS}, #state{last_ts=LastTS, acc=Acc} = S) 
     Acc2 = [{NewStack, 0},
             {LastStack, LastTime + USec}|Tail],
     S#state{last_ts=TS, acc=Acc2}
-  catch XX:YY ->
-            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:get_stacktrace()]),
+  catch XX:YY:Stacktrace ->
+            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:display(Stacktrace)]),
             S
   end;
 exp1_inner({trace_ts, _Pid, in, MFA, TS}, #state{last_ts=LastTS, acc=Acc} = S) ->
@@ -254,8 +255,8 @@ exp1_inner({trace_ts, _Pid, in, MFA, TS}, #state{last_ts=LastTS, acc=Acc} = S) -
     USec = timer:now_diff(TS, LastTS),
     Acc2 = [{[MFA_bin|LastExecStack], 0}, {SleepStack, SleepTime + USec}|Tail],
     S#state{last_ts=TS, acc=Acc2}
-  catch XX:YY ->
-            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:get_stacktrace()]),
+  catch XX:YY:Stacktrace ->
+            io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, XX, YY, erlang:display(Stacktrace)]),
             S
   end;
 
