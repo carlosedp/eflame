@@ -210,7 +210,8 @@ exp1_inner({trace_ts, _Pid, gc_start, _Info, TS}, #state{last_ts=LastTS, acc=Acc
             {LastStack, LastTime + USec}|Tail],
 %    io:format(user, "GC 1: ~p\n", [lists:sublist(Acc2, 4)]),
     S#state{last_ts=TS, acc=Acc2}
-  catch _XX:_YY ->
+  catch _XX:_YY:_ ->
+            %% if the following line is uncommented, replace "_" with "Stacktrace" variable above
             %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:display(Stacktrace)]),
             S
   end;
@@ -223,7 +224,8 @@ exp1_inner({trace_ts, _Pid, gc_end, _Info, TS}, #state{last_ts=LastTS, acc=Acc} 
     Acc2 = [{LastExecStack, 0}, {GCStack, GCTime + USec}|Tail],
 %    io:format(user, "GC 2: ~p\n", [lists:sublist(Acc2, 4)]),
     S#state{last_ts=TS, acc=Acc2}
-  catch _XX:_YY ->
+  catch _XX:_YY:_ ->
+            %% if the following line is uncommented, replace "_" with "Stacktrace" variable above
             %% io:format(user, "~p: ~p:~p @ ~p\n", [?LINE, _XX, _YY, erlang:display(Stacktrace)]),
             S
   end;

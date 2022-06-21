@@ -4,8 +4,6 @@
 
 ![screenshot](http://i.imgur.com/XIDAcd3.png)
 
-
-
 ## eflame2: Experimental variations of Vlad Ki's original eflame
 
 [Vlad Ki](https://github.com/proger/) wrote (and is still maintaining)
@@ -41,7 +39,7 @@ processes that may be `spawn()`ed in the future inside of Riak for 10
 seconds.  The Riak server is under only a moderate workload, but this
 method can easily create 1 GByte or more of trace data, beware!
 
-### Step 0: Compile eflame and copy BEAM files to the target system.
+### Step 0: Compile eflame and copy BEAM files to the target system
 
 Compile the source with:
 
@@ -53,12 +51,21 @@ all of the following commands in this example) on the Riak console:
 
     code:add_pathz("/tmp").
 
+### Step 0: If using rebar3, add eflame2 to the deps
+
+```erlang
+{deps, [
+    ...
+    {eflame, {git, "git@github.com:slfritchie/eflame", {branch, "master"}}}
+]}.
+```
+
 ### Step 0: Whenever you need a quick reference guide
 
 Run the function `eflame2:help()` for a quick reference guide,
 whenever you need it.
 
-### Step 1: Start a workload, then start eflame2 tracing.
+### Step 1: Start a workload, then start eflame2 tracing
 
 Get your workload running.  In this example, we're using Riak.  The
 workload could be a
@@ -90,7 +97,7 @@ The 3rd argument specifies which Erlang processes to trace.  Valid
 
     'all' | 'existing' | 'new' | pid() | [pid()]
 
-### Step 2: Format the binary trace data into text call stack output.
+### Step 2: Format the binary trace data into text call stack output
 
 Run this:
 
@@ -102,8 +109,8 @@ the following -- please wait until you see the "finished" message!
 
     Hello, world, I'm <0.1771.0> and I'm running....
     <0.1333.0> <0.180.0> <0.181.0> <0.182.0> <0.183.0> <0.184.0> <0.185.0> <0.186.0> <0.187.0> <0.188.0> <0.189.0> <0.190.0> <0.191.0> <0.192.0> <0.193.0> <0.194.0> <0.195.0> <0.177.0> <0.1509.0> <0.1510.0> <0.178.0> <0.373.0> <0.1511.0> <0.375.0> <0.1512.0> <0.377.0> <0.1513.0> <0.1514.0> <0.380.0> <0.1515.0> <0.382.0> <0.1516.0> <0.225.0> <0.243.0> <0.259.0> <0.254.0> <0.247.0> <0.242.0> <0.258.0> <0.246.0> <0.245.0> <0.244.0> <0.256.0> <0.257.0> <0.270.0> <0.265.0> <0.269.0> <0.271.0> <0.253.0> <0.240.0> <0.241.0> <0.263.0> <0.268.0> <0.264.0> <0.251.0> <0.266.0> <0.252.0> <0.239.0> <0.255.0> <0.267.0> <0.92.0> <0.91.0> <0.1517.0> <0.352.0> <0.351.0> <0.145.0> <0.1518.0> <0.1520.0> <0.1519.0> <0.385.0> <0.103.0> <0.104.0> <0.1521.0> <0.102.0>
-    
-    Writing to /tmp/ef.test.0.out for 76 processes... finished           
+
+    Writing to /tmp/ef.test.0.out for 76 processes... finished
 
 The output file, the 2nd argument, will look something like this:
 
@@ -146,7 +153,7 @@ use a command like this to filter out all other PIDs:
 
 ... and then use the filtered file in step #4 below.  The result will be
 
-### Step 4: Convert text call stack output to SVG.
+### Step 4: Convert text call stack output to SVG
 
     cat /tmp/ef.test.0.out | ./flamegraph.riak-color.pl > output.svg
 
@@ -175,7 +182,7 @@ Other examples are available in the 'More Examples' section below.
 ### Step 6: Follow the tutorial in README-Riak-Example.md
 
 For additional reading, see the Riak-centric tutorial in
-[README-Riak-Example.md](README-Riak-Example.md).  
+[README-Riak-Example.md](README-Riak-Example.md).
 
 ----------------
 ----------------
